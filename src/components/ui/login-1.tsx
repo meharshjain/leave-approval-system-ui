@@ -216,7 +216,7 @@ const Login1: React.FC<Login1Props> = ({
         </div>
         <div className='hidden lg:block w-1/2 right h-full overflow-hidden'>
             <img
-              src='https://images.pexels.com/photos/7102037/pexels-photo-7102037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+              src='/annual-leave.jpg'
               width={1000}
               height={1000}
               alt="Carousel image"
