@@ -28,19 +28,29 @@ import {
   Business,
   AccountCircle,
   Logout,
+  FlashOn,
+  LocalHospital,
+  Event,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
 const drawerWidth = 240;
 
-const menuItems = [
-  { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-  { text: 'Leave Request', icon: <Assignment />, path: '/leave-request' },
-  { text: 'Leave Approval', icon: <CheckCircle />, path: '/leave-approval' },
-  { text: 'Leave Records', icon: <History />, path: '/leave-records' },
-  { text: 'User Management', icon: <People />, path: '/users' },
-  { text: 'Department Management', icon: <Business />, path: '/departments' },
-];
+const getMenuItems = (userRole?: string) => {
+  const baseItems = [
+    { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
+    { text: 'Leave Request', icon: <Assignment />, path: '/leave-request', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
+    { text: 'Instant Leave', icon: <FlashOn />, path: '/instant-leave', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
+    { text: 'Leave Approval', icon: <CheckCircle />, path: '/leave-approval', roles: ['manager', 'coordinator', 'admin'] },
+    { text: 'Medical Review', icon: <LocalHospital />, path: '/medical-review', roles: ['doctor', 'admin'] },
+    { text: 'Appointments', icon: <Event />, path: '/appointments', roles: ['doctor', 'manager', 'admin'] },
+    { text: 'Leave Records', icon: <History />, path: '/leave-records', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
+    { text: 'User Management', icon: <People />, path: '/users', roles: ['admin', 'manager', 'coordinator'] },
+    { text: 'Department Management', icon: <Business />, path: '/departments', roles: ['admin'] },
+  ];
+
+  return baseItems.filter(item => !userRole || item.roles.includes(userRole));
+};
 
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -80,7 +90,7 @@ const Layout: React.FC = () => {
       </Toolbar>
       <Divider />
       <List>
-        {menuItems.map((item) => (
+        {getMenuItems(user?.role).map((item) => (
           <ListItem key={item.text} disablePadding>
             <ListItemButton
               selected={location.pathname === item.path}
@@ -116,7 +126,7 @@ const Layout: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
+            {getMenuItems(user?.role).find(item => item.path === location.pathname)?.text || 'Dashboard'}
           </Typography>
           <IconButton
             size="large"

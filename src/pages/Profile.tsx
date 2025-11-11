@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   Container,
@@ -10,8 +10,11 @@ import {
   Avatar,
   Alert,
   CircularProgress,
+  Divider,
+  Card,
+  CardContent,
 } from '@mui/material';
-import { Person } from '@mui/icons-material';
+import { Person, Link as LinkIcon, CheckCircle, Cancel } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
@@ -34,6 +37,8 @@ const Profile: React.FC = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [googleAuthStatus, setGoogleAuthStatus] = useState<boolean | null>(null);
+  const [checkingGoogle, setCheckingGoogle] = useState(true);
 
   const {
     control,
@@ -47,6 +52,41 @@ const Profile: React.FC = () => {
       password: '',
     },
   });
+
+  useEffect(() => {
+    checkGoogleAuth();
+  }, []);
+
+  const checkGoogleAuth = async () => {
+    try {
+      const response = await axios.get('/api/google/status');
+      setGoogleAuthStatus(response.data.isAuthenticated);
+    } catch (error) {
+      console.error('Error checking Google auth:', error);
+      setGoogleAuthStatus(false);
+    } finally {
+      setCheckingGoogle(false);
+    }
+  };
+
+  const handleConnectGoogle = async () => {
+    try {
+      const response = await axios.get('/api/google/auth');
+      window.location.href = response.data.authUrl;
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Failed to initiate Google authentication');
+    }
+  };
+
+  const handleDisconnectGoogle = async () => {
+    try {
+      await axios.delete('/api/google/disconnect');
+      setGoogleAuthStatus(false);
+      setMessage('Google account disconnected successfully');
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Failed to disconnect Google account');
+    }
+  };
 
   const onSubmit = async (data: ProfileForm) => {
     setLoading(true);
@@ -268,6 +308,62 @@ const Profile: React.FC = () => {
             </Box>
           </Box>
         </Box>
+
+        {/* Google Calendar Integration */}
+        {(user?.role === 'doctor' || user?.role === 'manager' || user?.role === 'admin') && (
+          <>
+            <Divider sx={{ my: 4 }} />
+            <Typography variant="h6" gutterBottom>
+              Google Calendar Integration
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Connect your Google account to automatically generate Google Meet links for appointments
+            </Typography>
+            <Card variant="outlined">
+              <CardContent>
+                {checkingGoogle ? (
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <CircularProgress size={20} />
+                    <Typography>Checking connection status...</Typography>
+                  </Box>
+                ) : googleAuthStatus ? (
+                  <Box>
+                    <Box display="flex" alignItems="center" gap={1} sx={{ mb: 2 }}>
+                      <CheckCircle color="success" />
+                      <Typography variant="body1" fontWeight="medium">
+                        Google account connected
+                      </Typography>
+                    </Box>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      startIcon={<Cancel />}
+                      onClick={handleDisconnectGoogle}
+                    >
+                      Disconnect Google
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Box display="flex" alignItems="center" gap={1} sx={{ mb: 2 }}>
+                      <Cancel color="error" />
+                      <Typography variant="body1">
+                        Google account not connected
+                      </Typography>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      startIcon={<LinkIcon />}
+                      onClick={handleConnectGoogle}
+                    >
+                      Connect Google Account
+                    </Button>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        )}
       </Paper>
     </Container>
   );

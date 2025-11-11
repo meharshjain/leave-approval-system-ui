@@ -110,12 +110,13 @@ const LeaveApproval: React.FC = () => {
   };
 
   const getApprovalStatus = (request: LeaveRequest) => {
-    if (user?.role === 'manager') {
+    /* if (user?.role === 'manager') {
       return request.managerApproval.status;
     } else if (user?.role === 'coordinator') {
       return request.coordinatorApproval.status;
     }
-    return 'pending';
+    return 'pending'; */
+    return request.status;
   };
 
   if (loading) {

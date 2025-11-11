@@ -156,6 +156,7 @@ const UserManagement: React.FC = () => {
       case 'admin': return 'error';
       case 'manager': return 'primary';
       case 'coordinator': return 'secondary';
+      case 'doctor': return 'success';
       case 'employee': return 'default';
       default: return 'default';
     }
@@ -327,6 +328,7 @@ const UserManagement: React.FC = () => {
                       <MenuItem value="employee">Employee</MenuItem>
                       <MenuItem value="manager">Manager</MenuItem>
                       <MenuItem value="coordinator">Coordinator</MenuItem>
+                      <MenuItem value="doctor">Doctor</MenuItem>
                       <MenuItem value="admin">Admin</MenuItem>
                     </Select>
                   </FormControl>

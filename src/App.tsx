@@ -12,6 +12,9 @@ import LeaveRecords from './pages/LeaveRecords';
 import UserManagement from './pages/UserManagement';
 import DepartmentManagement from './pages/DepartmentManagement';
 import Profile from './pages/Profile';
+import InstantLeaveApproval from './pages/InstantLeaveApproval';
+import MedicalReview from './pages/MedicalReview';
+import Appointments from './pages/Appointments';
 import Layout from './components/Layout';
 
 const theme = createTheme({
@@ -41,7 +44,10 @@ function App() {
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="leave-request" element={<LeaveRequest />} />
+              <Route path="instant-leave" element={<InstantLeaveApproval />} />
               <Route path="leave-approval" element={<LeaveApproval />} />
+              <Route path="medical-review" element={<MedicalReview />} />
+              <Route path="appointments" element={<Appointments />} />
               <Route path="leave-records" element={<LeaveRecords />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="departments" element={<DepartmentManagement />} />
