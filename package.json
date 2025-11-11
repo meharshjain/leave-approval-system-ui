@@ -55,6 +55,8 @@
       "last 1 safari version"
     ]
   },
+  "author": "Harsh Jain",
+  "license": "MIT",
   "proxy": "http://localhost:5000",
   "devDependencies": {
     "@craco/craco": "^7.1.0",
