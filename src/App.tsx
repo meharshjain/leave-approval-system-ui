@@ -19,11 +19,20 @@ import Layout from './components/Layout';
 
 const theme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#1976d2',
+      main: '#3b82f6',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#f59e0b',
+    },
+    background: {
+      default: '#0a0a0a',
+      paper: '#1a1a1a',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#a0a0a0',
     },
   },
 });

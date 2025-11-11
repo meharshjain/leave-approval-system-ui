@@ -24,55 +24,55 @@ const getMenuItems = (userRole?: string) => {
     {
       label: 'Dashboard',
       href: '/dashboard',
-      icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <LayoutDashboard className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
     },
     {
       label: 'Leave Request',
       href: '/leave-request',
-      icon: <FileText className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <FileText className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
     },
     {
       label: 'Instant Leave',
       href: '/instant-leave',
-      icon: <Zap className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <Zap className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
     },
     {
       label: 'Leave Approval',
       href: '/leave-approval',
-      icon: <CheckCircle2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <CheckCircle2 className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['manager', 'coordinator', 'admin'],
     },
     {
       label: 'Medical Review',
       href: '/medical-review',
-      icon: <Stethoscope className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <Stethoscope className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['doctor', 'admin'],
     },
     {
       label: 'Appointments',
       href: '/appointments',
-      icon: <Calendar className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <Calendar className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['doctor', 'manager', 'admin'],
     },
     {
       label: 'Leave Records',
       href: '/leave-records',
-      icon: <History className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <History className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
     },
     {
       label: 'User Management',
       href: '/users',
-      icon: <Users className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <Users className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['admin', 'manager', 'coordinator'],
     },
     {
       label: 'Department Management',
       href: '/departments',
-      icon: <Building2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      icon: <Building2 className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
       roles: ['admin'],
     },
   ];
@@ -84,13 +84,13 @@ const Logo = () => {
   return (
     <Link
       to="/dashboard"
-      className="font-normal flex space-x-2 items-center text-sm text-black dark:text-white py-1 relative z-20"
+      className="font-normal flex space-x-2 items-center text-sm text-white py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <div className="h-5 w-6 bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="font-medium text-black dark:text-white whitespace-pre"
+        className="font-medium text-white whitespace-pre"
       >
         Leave Management
       </motion.span>
@@ -102,9 +102,9 @@ const LogoIcon = () => {
   return (
     <Link
       to="/dashboard"
-      className="font-normal flex space-x-2 items-center text-sm text-black dark:text-white py-1 relative z-20"
+      className="font-normal flex space-x-2 items-center text-sm text-white py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <div className="h-5 w-6 bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
     </Link>
   );
 };
@@ -143,10 +143,10 @@ const Layout: React.FC = () => {
                   key={idx}
                   link={item}
                   className={cn(
-                    "px-2 rounded-md transition-colors",
+                    "px-1 rounded-md transition-colors",
                     location.pathname === item.href
-                      ? 'bg-neutral-200 dark:bg-neutral-700'
-                      : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                      ? 'bg-neutral-700'
+                      : 'hover:bg-neutral-800'
                   )}
                 />
               ))}
@@ -158,41 +158,41 @@ const Layout: React.FC = () => {
                 label: user?.name || 'Profile',
                 href: '/profile',
                 icon: user?.name ? (
-                  <div className="h-7 w-7 flex-shrink-0 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                  <div className="h-7 w-7 flex-shrink-0 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 ) : (
-                  <UserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                  <UserCircle className="text-neutral-200 h-5 w-5 flex-shrink-0" />
                 ),
             }}
               className={cn(
-                "px-2 rounded-md transition-colors",
+                "px-1 rounded-md transition-colors",
                 location.pathname === '/profile'
-                  ? 'bg-neutral-200 dark:bg-neutral-700'
-                  : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  ? 'bg-neutral-700'
+                  : 'hover:bg-neutral-800'
               )}
             />
             <SidebarLink
               link={{
                 label: 'Logout',
                 href: '#',
-                icon: <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                icon: <LogOut className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
               }}
               onClick={handleLogout}
-              className="px-2 rounded-md transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              className="px-2 rounded-md transition-colors hover:bg-neutral-800"
             />
           </div>
         </SidebarBody>
       </Sidebar>
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
-        <header className="h-16 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 flex items-center px-6 flex-shrink-0">
-          <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">
+        <header className="h-16 bg-neutral-900 border-b border-neutral-700 flex items-center px-6 flex-shrink-0">
+          <h1 className="text-xl font-semibold text-white">
             {getCurrentPageTitle()}
           </h1>
         </header>
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-neutral-950 p-0 m-0">
+        <main className="flex-1 overflow-y-auto bg-neutral-950 p-0 m-0">
           <div className="p-0 m-0">
             <Outlet />
           </div>

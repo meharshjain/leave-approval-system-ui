@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Add dark class to HTML element
+document.documentElement.classList.add('dark');
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
