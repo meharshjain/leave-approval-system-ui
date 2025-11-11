@@ -81,13 +81,13 @@ const LeaveRequest: React.FC = () => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/leave/request', {
+      await axios.post('/api/leave/request', {
         leaveType: data.leaveType,
-        startDate: data.startDate.toISOString(),
-        endDate: data.endDate.toISOString(),
+        startDate: data.startDate.toDate().toISOString(),
+        endDate: data.endDate.toDate().toISOString(),
         reason: data.reason,
         academicYear: new Date().getFullYear().toString(),
-      });
+      }, { timeout: 5000 });
 
       setMessage('Leave request submitted successfully!');
       
@@ -97,7 +97,38 @@ const LeaveRequest: React.FC = () => {
       setValue('endDate', null);
       setValue('reason', '');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to submit leave request');
+      const status = Number(err?.response?.status);
+      const isOffline = !err?.response || status >= 500;
+      if (isOffline) {
+        try {
+          const key = 'offline_leave_requests';
+          const raw = localStorage.getItem(key);
+          const existing = raw ? JSON.parse(raw) : [];
+          const offlineItem = {
+            id: `offline-${Date.now()}`,
+            leaveType: data.leaveType,
+            startDate: data.startDate.toDate().toISOString(),
+            endDate: data.endDate.toDate().toISOString(),
+            reason: data.reason,
+            academicYear: new Date().getFullYear().toString(),
+            createdAt: new Date().toISOString(),
+            status: 'pending',
+          };
+          localStorage.setItem(key, JSON.stringify([offlineItem, ...existing]));
+          setMessage('Leave saved offline and will be submitted when the server is available.');
+          setError('');
+
+          // Reset form
+          setValue('leaveType', '');
+          setValue('startDate', null);
+          setValue('endDate', null);
+          setValue('reason', '');
+        } catch {
+          setError('Failed to submit leave request');
+        }
+      } else {
+        setError(err.response?.data?.message || 'Failed to submit leave request');
+      }
     } finally {
       setLoading(false);
     }

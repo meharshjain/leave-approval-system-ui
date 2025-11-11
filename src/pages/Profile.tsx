@@ -32,7 +32,7 @@ interface ProfileForm {
 
 
 const Profile: React.FC = () => {
-  const { user, login } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -94,14 +94,18 @@ const Profile: React.FC = () => {
     setMessage('');
 
     try {
-      await axios.put('/api/auth/profile', data);
+      const updates: any = {
+        name: data.name,
+        phone: data.phone,
+        position: data.position,
+      };
+      // Only send password if provided
+      if (data.password) updates.password = data.password;
+
+      await updateProfile(updates);
       setMessage('Profile updated successfully!');
-      
-      // Refresh user data
-      const response = await axios.get('/api/auth/me');
-      login(user?.email || '', ''); // This will trigger a re-fetch
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      setError(err.message || 'Failed to update profile');
     } finally {
       setLoading(false);
     }

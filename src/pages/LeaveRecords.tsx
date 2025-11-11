@@ -77,9 +77,62 @@ const LeaveRecords: React.FC = () => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/leave/records/${academicYear}`);
-      setRecords(response.data);
+      const serverRecords: LeaveRecord[] = response.data || [];
+
+      // Merge offline-saved requests from localStorage
+      const offlineKey = 'offline_leave_requests';
+      const raw = localStorage.getItem(offlineKey);
+      const offline: any[] = raw ? JSON.parse(raw) : [];
+      const offlineRecords: LeaveRecord[] = offline.map((item) => {
+        const start = new Date(item.startDate);
+        const end = new Date(item.endDate);
+        const totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+        return {
+          _id: item.id,
+          employee: {
+            _id: 'me',
+            name: user?.name || 'You',
+            email: user?.email || '',
+            employeeId: user?.employeeId || '',
+          },
+          leaveType: item.leaveType,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          totalDays,
+          reason: item.reason,
+          status: 'pending',
+          managerApproval: { status: 'pending' },
+          coordinatorApproval: { status: 'pending' },
+          createdAt: item.createdAt || new Date().toISOString(),
+        };
+      });
+
+      setRecords([...offlineRecords, ...serverRecords]);
     } catch (error) {
       console.error('Error fetching leave records:', error);
+      // Still show offline records when server is unavailable
+      const offlineKey = 'offline_leave_requests';
+      const raw = localStorage.getItem(offlineKey);
+      const offline: any[] = raw ? JSON.parse(raw) : [];
+      const offlineRecords: LeaveRecord[] = offline.map((item) => ({
+        _id: item.id,
+        employee: {
+          _id: 'me',
+          name: user?.name || 'You',
+          email: user?.email || '',
+          employeeId: user?.employeeId || '',
+        },
+        leaveType: item.leaveType,
+        startDate: item.startDate,
+        endDate: item.endDate,
+        totalDays: Math.max(1, Math.ceil((new Date(item.endDate).getTime() - new Date(item.startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1),
+        reason: item.reason,
+        status: 'pending',
+        managerApproval: { status: 'pending' },
+        coordinatorApproval: { status: 'pending' },
+        createdAt: item.createdAt || new Date().toISOString(),
+      }));
+      setRecords(offlineRecords);
     } finally {
       setLoading(false);
     }
@@ -91,9 +144,10 @@ const LeaveRecords: React.FC = () => {
       return;
     }
 
+    const needle = searchEmployee.toLowerCase();
     const filtered = records.filter(record =>
-      record.employee.name.toLowerCase().includes(searchEmployee.toLowerCase()) ||
-      record.employee.employeeId.toLowerCase().includes(searchEmployee.toLowerCase())
+      record.employee?.name?.toLowerCase().includes(needle) ||
+      record.employee?.employeeId?.toLowerCase().includes(needle)
     );
     setFilteredRecords(filtered);
   };

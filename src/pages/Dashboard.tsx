@@ -30,6 +30,7 @@ import {
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import Tawk from '../contexts/Tawk';
+import { HeroScrollDemo } from '@/components/ui/hero-scroll-demo';
 
 interface DashboardStats {
   pendingRequests: number;
@@ -64,6 +65,23 @@ const Dashboard: React.FC = () => {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('WEEK');
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const { user } = useAuth();
+  const [now, setNow] = useState<Date>(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDateTime = (date: Date) =>
+    date.toLocaleString(undefined, {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
 
   // Generate chart data based on time filter
   const generateChartData = (filter: TimeFilter): ChartData[] => {
@@ -144,6 +162,9 @@ const Dashboard: React.FC = () => {
     ? Math.round((stats.approvedRequests / stats.totalRequests) * 100)
     : 0;
 
+  const leavesTaken = stats?.approvedRequests ?? 0;
+  const pendingCount = stats?.pendingRequests ?? 0;
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
@@ -155,8 +176,58 @@ const Dashboard: React.FC = () => {
   return (
     <Box sx={{ width: '100%', p: 0, m: 0 }}>
       <Box sx={{ bgcolor: '#1a1a1a', minHeight: '100vh', p: 3, borderRadius: 2 }}>
+        {/* Current Date and Time */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5" sx={{ color: 'white', fontWeight: 'bold' }}>
+            {user ? `Welcome, ${user.name}` : 'Welcome'}
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#a0a0a0' }}>
+            {formatDateTime(now)}
+          </Typography>
+        </Box>
+        {/* Scroll Animation Hero */}
+        <div className="mb-8">
+          <HeroScrollDemo />
+        </div>
         {/* KPI Cards Section */}
         <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+          {/* Leaves Taken Card */}
+          <Card sx={{ 
+            flex: '1 1 300px', 
+            bgcolor: '#2a2a2a', 
+            color: 'white',
+            position: 'relative',
+            minHeight: '180px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}>
+            <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+              <TrendingUp sx={{ color: '#10b981', fontSize: 20 }} />
+            </Box>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ 
+                  width: 12, 
+                  height: 12, 
+                  bgcolor: '#10b981', 
+                  mr: 1.5,
+                  borderRadius: 0.5
+                }} />
+                <Typography variant="body2" sx={{ color: '#999', textTransform: 'uppercase', letterSpacing: 1 }}>
+                  Leaves Taken
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 'bold' }}>
+                  {leavesTaken}
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#666', mt: 1 }}>
+                Approved so far
+              </Typography>
+            </CardContent>
+          </Card>
           {/* Approval Rate Card */}
           <Card sx={{ 
             flex: '1 1 300px', 
