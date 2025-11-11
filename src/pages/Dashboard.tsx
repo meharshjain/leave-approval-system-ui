@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
   Paper,
   Typography,
   Box,
@@ -154,7 +153,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ width: '100%', p: 0, m: 0 }}>
       <Box sx={{ bgcolor: '#1a1a1a', minHeight: '100vh', p: 3, borderRadius: 2 }}>
         {/* KPI Cards Section */}
         <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
@@ -478,7 +477,7 @@ const Dashboard: React.FC = () => {
         </Box>
       </Box>
       <Tawk />
-    </Container>
+    </Box>
   );
 };
 
