@@ -1,214 +1,202 @@
 import React, { useState } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Sidebar, SidebarBody, SidebarLink } from './ui/sidebar';
 import {
-  AppBar,
-  Box,
-  CssBaseline,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  Typography,
-  Avatar,
-  Menu,
-  MenuItem,
-  Divider,
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Dashboard,
-  Assignment,
-  CheckCircle,
+  LayoutDashboard,
+  FileText,
+  Zap,
+  CheckCircle2,
+  Stethoscope,
+  Calendar,
   History,
-  People,
-  Business,
-  AccountCircle,
-  Logout,
-  FlashOn,
-  LocalHospital,
-  Event,
-} from '@mui/icons-material';
+  Users,
+  Building2,
+  UserCircle,
+  LogOut,
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-
-const drawerWidth = 240;
+import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const getMenuItems = (userRole?: string) => {
   const baseItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
-    { text: 'Leave Request', icon: <Assignment />, path: '/leave-request', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
-    { text: 'Instant Leave', icon: <FlashOn />, path: '/instant-leave', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
-    { text: 'Leave Approval', icon: <CheckCircle />, path: '/leave-approval', roles: ['manager', 'coordinator', 'admin'] },
-    { text: 'Medical Review', icon: <LocalHospital />, path: '/medical-review', roles: ['doctor', 'admin'] },
-    { text: 'Appointments', icon: <Event />, path: '/appointments', roles: ['doctor', 'manager', 'admin'] },
-    { text: 'Leave Records', icon: <History />, path: '/leave-records', roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'] },
-    { text: 'User Management', icon: <People />, path: '/users', roles: ['admin', 'manager', 'coordinator'] },
-    { text: 'Department Management', icon: <Business />, path: '/departments', roles: ['admin'] },
+    {
+      label: 'Dashboard',
+      href: '/dashboard',
+      icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
+    },
+    {
+      label: 'Leave Request',
+      href: '/leave-request',
+      icon: <FileText className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
+    },
+    {
+      label: 'Instant Leave',
+      href: '/instant-leave',
+      icon: <Zap className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
+    },
+    {
+      label: 'Leave Approval',
+      href: '/leave-approval',
+      icon: <CheckCircle2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['manager', 'coordinator', 'admin'],
+    },
+    {
+      label: 'Medical Review',
+      href: '/medical-review',
+      icon: <Stethoscope className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['doctor', 'admin'],
+    },
+    {
+      label: 'Appointments',
+      href: '/appointments',
+      icon: <Calendar className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['doctor', 'manager', 'admin'],
+    },
+    {
+      label: 'Leave Records',
+      href: '/leave-records',
+      icon: <History className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['employee', 'manager', 'coordinator', 'admin', 'doctor'],
+    },
+    {
+      label: 'User Management',
+      href: '/users',
+      icon: <Users className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['admin', 'manager', 'coordinator'],
+    },
+    {
+      label: 'Department Management',
+      href: '/departments',
+      icon: <Building2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+      roles: ['admin'],
+    },
   ];
 
   return baseItems.filter(item => !userRole || item.roles.includes(userRole));
 };
 
+const Logo = () => {
+  return (
+    <Link
+      to="/dashboard"
+      className="font-normal flex space-x-2 items-center text-sm text-black dark:text-white py-1 relative z-20"
+    >
+      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="font-medium text-black dark:text-white whitespace-pre"
+      >
+        Leave Management
+      </motion.span>
+    </Link>
+  );
+};
+
+const LogoIcon = () => {
+  return (
+    <Link
+      to="/dashboard"
+      className="font-normal flex space-x-2 items-center text-sm text-black dark:text-white py-1 relative z-20"
+    >
+      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+    </Link>
+  );
+};
+
 const Layout: React.FC = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const menuItems = getMenuItems(user?.role);
 
   const handleLogout = () => {
     logout();
-    handleClose();
+    navigate('/login');
   };
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    setMobileOpen(false);
+  const getCurrentPageTitle = () => {
+    return menuItems.find(item => item.href === location.pathname)?.label || 'Dashboard';
   };
 
-  const drawer = (
-    <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          Leave Management
-        </Typography>
-      </Toolbar>
-      <Divider />
-      <List>
-        {getMenuItems(user?.role).map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => handleNavigation(item.path)}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+  // Close mobile sidebar when route changes
+  React.useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {getMenuItems(user?.role).find(item => item.path === location.pathname)?.text || 'Dashboard'}
-          </Typography>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            color="inherit"
-          >
-            <Avatar sx={{ width: 32, height: 32 }}>
-              {user?.name?.charAt(0).toUpperCase()}
-            </Avatar>
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+    <div className="flex h-screen w-full overflow-hidden">
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
+        <SidebarBody className="justify-between gap-10">
+          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+            {sidebarOpen ? <Logo /> : <LogoIcon />}
+            <div className="mt-8 flex flex-col gap-2">
+              {menuItems.map((item, idx) => (
+                <SidebarLink
+                  key={idx}
+                  link={item}
+                  className={cn(
+                    "px-2 rounded-md transition-colors",
+                    location.pathname === item.href
+                      ? 'bg-neutral-200 dark:bg-neutral-700'
+                      : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <SidebarLink
+              link={{
+                label: user?.name || 'Profile',
+                href: '/profile',
+                icon: user?.name ? (
+                  <div className="h-7 w-7 flex-shrink-0 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                ) : (
+                  <UserCircle className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                ),
             }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={() => { navigate('/profile'); handleClose(); }}>
-              <ListItemIcon>
-                <AccountCircle fontSize="small" />
-              </ListItemIcon>
-              Profile
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={handleLogout}>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-              </ListItemIcon>
-              Logout
-            </MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-      >
-        <Toolbar />
+              className={cn(
+                "px-2 rounded-md transition-colors",
+                location.pathname === '/profile'
+                  ? 'bg-neutral-200 dark:bg-neutral-700'
+                  : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              )}
+            />
+            <SidebarLink
+              link={{
+                label: 'Logout',
+                href: '#',
+                icon: <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+              }}
+              onClick={handleLogout}
+              className="px-2 rounded-md transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            />
+          </div>
+        </SidebarBody>
+      </Sidebar>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Header */}
+        <header className="h-16 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 flex items-center px-6 flex-shrink-0">
+          <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">
+            {getCurrentPageTitle()}
+          </h1>
+        </header>
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-neutral-950 p-6">
         <Outlet />
-      </Box>
-    </Box>
+        </main>
+      </div>
+    </div>
   );
 };
 
