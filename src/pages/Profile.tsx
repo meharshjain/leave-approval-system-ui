@@ -109,8 +109,8 @@ const Profile: React.FC = () => {
 
   if (!user) {
     return (
-      <Container maxWidth="md">
-        <Paper sx={{ p: 4, mt: 4 }}>
+      <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
+        <Paper sx={{ p: { xs: 2, sm: 3, md: 4 }, mt: { xs: 2, sm: 3, md: 4 } }}>
           <Typography variant="h6" color="error">
             User not found
           </Typography>
@@ -120,8 +120,8 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="md">
-      <Paper sx={{ p: 4, mt: 4 }}>
+    <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
+      <Paper sx={{ p: { xs: 2, sm: 3, md: 4 }, mt: { xs: 2, sm: 3, md: 4 } }}>
         <Box display="flex" alignItems="center" mb={4}>
           <Avatar sx={{ width: 64, height: 64, mr: 3 }}>
             <Person sx={{ fontSize: 40 }} />

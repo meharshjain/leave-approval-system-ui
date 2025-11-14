@@ -63,7 +63,25 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('WEEK');
   const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [chartHeight, setChartHeight] = useState(400);
   const { user } = useAuth();
+
+  // Update chart height based on window size
+  useEffect(() => {
+    const updateChartHeight = () => {
+      if (window.innerWidth < 600) {
+        setChartHeight(300);
+      } else if (window.innerWidth < 960) {
+        setChartHeight(350);
+      } else {
+        setChartHeight(400);
+      }
+    };
+
+    updateChartHeight();
+    window.addEventListener('resize', updateChartHeight);
+    return () => window.removeEventListener('resize', updateChartHeight);
+  }, []);
 
   // Generate chart data based on time filter
   const generateChartData = (filter: TimeFilter): ChartData[] => {
@@ -154,16 +172,27 @@ const Dashboard: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: 0, m: 0 }}>
-      <Box sx={{ bgcolor: '#1a1a1a', minHeight: '100vh', p: 3, borderRadius: 2 }}>
+      <Box sx={{ 
+        bgcolor: '#1a1a1a', 
+        minHeight: '100%', 
+        p: { xs: 2, sm: 2.5, md: 3 }, 
+        borderRadius: { xs: 0, sm: 2 },
+        width: '100%'
+      }}>
         {/* KPI Cards Section */}
-        <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          gap: { xs: 2, sm: 2.5, md: 3 }, 
+          mb: { xs: 3, md: 4 }, 
+          flexWrap: 'wrap' 
+        }}>
           {/* Approval Rate Card */}
           <Card sx={{ 
-            flex: '1 1 300px', 
+            flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', md: '1 1 300px' }, 
             bgcolor: '#2a2a2a', 
             color: 'white',
             position: 'relative',
-            minHeight: '180px',
+            minHeight: { xs: '160px', sm: '180px' },
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
@@ -202,11 +231,11 @@ const Dashboard: React.FC = () => {
 
           {/* Pending Requests Card */}
           <Card sx={{ 
-            flex: '1 1 300px', 
+            flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', md: '1 1 300px' }, 
             bgcolor: '#2a2a2a', 
             color: 'white',
             position: 'relative',
-            minHeight: '180px',
+            minHeight: { xs: '160px', sm: '180px' },
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
@@ -245,11 +274,11 @@ const Dashboard: React.FC = () => {
 
           {/* Active Leaves Card */}
           <Card sx={{ 
-            flex: '1 1 300px', 
+            flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', md: '1 1 300px' }, 
             bgcolor: '#2a2a2a', 
             color: 'white',
             position: 'relative',
-            minHeight: '180px',
+            minHeight: { xs: '160px', sm: '180px' },
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
@@ -349,9 +378,10 @@ const Dashboard: React.FC = () => {
         {/* Chart Section */}
         <Paper sx={{ 
           bgcolor: '#2a2a2a', 
-          p: 3, 
-          borderRadius: 2,
-          minHeight: '400px'
+          p: { xs: 2, sm: 2.5, md: 3 }, 
+          borderRadius: { xs: 0, sm: 2 },
+          minHeight: { xs: '300px', sm: '350px', md: '400px' },
+          overflow: 'hidden'
         }}>
           <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
             <Box sx={{ display: 'flex', gap: 3 }}>
@@ -376,7 +406,7 @@ const Dashboard: React.FC = () => {
             </Box>
           </Box>
           
-          <ResponsiveContainer width="100%" height={400}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
             <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorApproved" x1="0" y1="0" x2="0" y2="1">

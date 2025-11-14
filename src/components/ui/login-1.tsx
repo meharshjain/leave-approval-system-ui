@@ -128,10 +128,10 @@ const Login1: React.FC<Login1Props> = ({
   ];
 
   return (
-    <div className="h-screen w-[100%] bg-[var(--color-bg)] flex items-center justify-center p-4 text-[var(--color-text-primary)]">
-    <div className='card w-[80%] lg:w-[70%] md:w-[55%] flex justify-between h-[600px]'>
+    <div className="min-h-screen w-full bg-[var(--color-bg)] flex items-center justify-center p-4 py-8 text-[var(--color-text-primary)] overflow-y-auto">
+    <div className='card w-full max-w-[90%] sm:max-w-[80%] md:max-w-[70%] lg:max-w-[60%] flex flex-col lg:flex-row justify-between min-h-[500px] sm:min-h-[550px] md:min-h-[600px]'>
       <div
-        className='w-full lg:w-1/2 px-4 lg:px-16 left h-full relative overflow-hidden'
+        className='w-full lg:w-1/2 px-4 sm:px-8 lg:px-16 left min-h-[400px] sm:min-h-[450px] md:min-h-[500px] lg:h-full relative overflow-hidden flex flex-col'
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
@@ -144,8 +144,8 @@ const Login1: React.FC<Login1Props> = ({
               transition: 'transform 0.1s ease-out'
             }}
           />
-          <div className="form-container sign-in-container h-full z-10">
-            <form className='text-center py-10 md:py-20 grid gap-2 h-full' onSubmit={handleSubmit}>
+          <div className="form-container sign-in-container flex-1 z-10 flex flex-col">
+            <form className='text-center py-6 sm:py-8 md:py-10 lg:py-20 grid gap-2 flex-1' onSubmit={handleSubmit}>
               <div className='grid gap-4 md:gap-6 mb-2'>
                 <h1 className='text-3xl md:text-4xl font-extrabold text-[var(--color-heading)]'>Sign in</h1>
                 <div className="social-container">
@@ -214,7 +214,7 @@ const Login1: React.FC<Login1Props> = ({
             </form>
           </div>
         </div>
-        <div className='hidden lg:block w-1/2 right h-full overflow-hidden'>
+        <div className='hidden lg:block w-1/2 right min-h-[500px] lg:h-full overflow-hidden'>
             <img
               src='/annual-leave.jpg'
               width={1000}

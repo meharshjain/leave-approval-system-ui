@@ -36,7 +36,7 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <div className={`${visible ? "" : "hidden"} min-h-screen bg-black h-full flex items-center justify-center`}>
+      <div className={`${visible ? "" : "hidden"} min-h-screen bg-black w-full flex items-center justify-center overflow-hidden`}>
         <GooeyText
           texts={["Leave", "Approval", "Portal"]}
           morphTime={1}
@@ -44,7 +44,7 @@ const Login: React.FC = () => {
           className="font-bold"
         />
       </div>
-      <div className={`${!visible ? "" : "hidden"}`}>
+      <div className={`${!visible ? "" : "hidden"} min-h-screen w-full`}>
         <Login1
           email={email}
           password={password}

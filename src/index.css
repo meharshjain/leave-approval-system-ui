@@ -53,18 +53,49 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    /* Enable smooth scrolling */
+    scroll-behavior: smooth;
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+  }
+  
   body {
     @apply bg-background text-foreground;
     margin: 0;
+    padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Ensure body can scroll */
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Use min-height instead of height for flexibility */
+    min-height: 100vh;
+    width: 100%;
   }
 
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
       monospace;
+  }
+  
+  /* Ensure root element allows scrolling */
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Responsive utilities */
+  @media (max-width: 640px) {
+    /* Small screens - ensure content is accessible */
+    * {
+      max-width: 100%;
+    }
   }
 }

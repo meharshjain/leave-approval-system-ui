@@ -106,9 +106,9 @@ const LeaveRequest: React.FC = () => {
   const totalDays = startDate && endDate ? endDate.diff(startDate, 'day') + 1 : 0;
 
   return (
-    <Container maxWidth="md">
-      <Paper sx={{ p: 4, mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
+    <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
+      <Paper sx={{ p: { xs: 2, sm: 3, md: 4 }, mt: { xs: 2, sm: 3, md: 4 } }}>
+        <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
           Submit Leave Request
         </Typography>
 
@@ -126,8 +126,8 @@ const LeaveRequest: React.FC = () => {
 
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 2, sm: 3 } }}>
+              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', md: '1 1 300px' }, minWidth: { xs: '100%', sm: '250px' } }}>
                 <FormControl fullWidth error={!!errors.leaveType}>
                   <InputLabel>Leave Type</InputLabel>
                   <Controller
@@ -152,15 +152,15 @@ const LeaveRequest: React.FC = () => {
                 </FormControl>
               </Box>
 
-              <Box sx={{ flex: '1 1 300px', minWidth: '300px', display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', md: '1 1 300px' }, minWidth: { xs: '100%', sm: '250px' }, display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body2" color="text.secondary">
                   Total Days: {totalDays > 0 ? totalDays : 'Select dates'}
                 </Typography>
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 2, sm: 3 } }}>
+              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', md: '1 1 300px' }, minWidth: { xs: '100%', sm: '250px' } }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Controller
                     name="startDate"

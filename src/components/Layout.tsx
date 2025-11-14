@@ -13,6 +13,7 @@ import {
   Building2,
   UserCircle,
   LogOut,
+  Menu,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -132,7 +133,7 @@ const Layout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
+    <div className="flex min-h-screen w-full">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
@@ -184,16 +185,20 @@ const Layout: React.FC = () => {
           </div>
         </SidebarBody>
       </Sidebar>
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 min-w-0">
         {/* Header */}
-        <header className="h-16 bg-neutral-900 border-b border-neutral-700 flex items-center px-6 flex-shrink-0">
-          <h1 className="text-xl font-semibold text-white">
+        <header className="h-16 bg-neutral-900 border-b border-neutral-700 flex items-center px-4 md:px-6 flex-shrink-0">
+          <Menu
+            className="text-neutral-200 cursor-pointer mr-3 md:hidden"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          />
+          <h1 className="text-lg md:text-xl font-semibold text-white truncate">
             {getCurrentPageTitle()}
           </h1>
         </header>
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-neutral-950 p-0 m-0">
-          <div className="p-0 m-0">
+        <main className="flex-1 bg-neutral-950 overflow-y-auto overflow-x-hidden">
+          <div className="w-full">
             <Outlet />
           </div>
         </main>

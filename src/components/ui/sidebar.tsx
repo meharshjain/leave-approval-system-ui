@@ -87,7 +87,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-neutral-800 w-[300px] flex-shrink-0",
+        "min-h-screen px-4 py-4 hidden md:flex md:flex-col bg-neutral-800 w-[300px] flex-shrink-0",
         className
       )}
       animate={{
@@ -110,44 +110,32 @@ export const MobileSidebar = ({
   const { open, setOpen } = useSidebar();
   return (
     <>
-      <div
-        className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-800 w-full"
-        )}
-        {...props}
-      >
-        <div className="flex justify-end z-20 w-full">
-          <Menu
-            className="text-neutral-200 cursor-pointer"
-            onClick={() => setOpen(!open)}
-          />
-        </div>
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ x: "-100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "-100%", opacity: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
-              className={cn(
-                "fixed h-full w-full inset-0 bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
-                className
-              )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ x: "-100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "-100%", opacity: 0 }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
+            className={cn(
+              "fixed h-full w-full inset-0 bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+              className
+            )}
+           /*  {...props} */
+          >
+            <div
+              className="absolute right-10 top-10 z-50 text-neutral-200 cursor-pointer"
+              onClick={() => setOpen(!open)}
             >
-              <div
-                className="absolute right-10 top-10 z-50 text-neutral-200 cursor-pointer"
-                onClick={() => setOpen(!open)}
-              >
-                <X />
-              </div>
-              {children}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              <X />
+            </div>
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
@@ -163,7 +151,7 @@ export const SidebarLink = ({
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 } & Omit<React.ComponentProps<typeof Link>, 'to' | 'onClick'>) => {
   const { open, animate } = useSidebar();
-  
+
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (onClick) {
       onClick(e);

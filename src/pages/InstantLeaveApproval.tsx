@@ -317,9 +317,9 @@ const InstantLeaveApproval: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Paper sx={{ p: 4, mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
+      <Paper sx={{ p: { xs: 2, sm: 3, md: 4 }, mt: { xs: 2, sm: 3, md: 4 } }}>
+        <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
           Instant Leave Approval
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
