@@ -58,12 +58,12 @@ interface LeaveRecord {
 }
 
 const LeaveRecords: React.FC = () => {
+  const { user } = useAuth();
   const [records, setRecords] = useState<LeaveRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [academicYear, setAcademicYear] = useState(new Date().getFullYear().toString());
   const [searchEmployee, setSearchEmployee] = useState('');
   const [filteredRecords, setFilteredRecords] = useState<LeaveRecord[]>([]);
-  const { user } = useAuth();
 
   useEffect(() => {
     fetchLeaveRecords();
@@ -111,7 +111,10 @@ const LeaveRecords: React.FC = () => {
   const getApprovalStatus = (record: LeaveRecord) => {
     const managerStatus = record.managerApproval.status;
     const coordinatorStatus = record.coordinatorApproval.status;
-    
+
+    if (record.status !== 'pending') {
+      return record.status;
+    }
     if (managerStatus === 'rejected' || coordinatorStatus === 'rejected') {
       return 'rejected';
     }
@@ -128,6 +131,8 @@ const LeaveRecords: React.FC = () => {
       </Box>
     );
   }
+
+  const isAdmin = user?.role === 'admin';
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
@@ -151,7 +156,6 @@ const LeaveRecords: React.FC = () => {
               </Select>
             </FormControl>
           </Box>
-          
           <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
             <TextField
               fullWidth
@@ -190,8 +194,8 @@ const LeaveRecords: React.FC = () => {
                   <TableCell>End Date</TableCell>
                   <TableCell>Days</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell>Manager Approval</TableCell>
-                  <TableCell>Coordinator Approval</TableCell>
+                  {isAdmin && <TableCell>Manager Approval</TableCell>}
+                  {isAdmin && <TableCell>Coordinator Approval</TableCell>}
                   <TableCell>Applied Date</TableCell>
                 </TableRow>
               </TableHead>
@@ -223,7 +227,7 @@ const LeaveRecords: React.FC = () => {
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>
+                    {isAdmin && <TableCell>
                       <Box>
                         <Chip
                           label={record.managerApproval.status}
@@ -236,8 +240,8 @@ const LeaveRecords: React.FC = () => {
                           </Typography>
                         )}
                       </Box>
-                    </TableCell>
-                    <TableCell>
+                    </TableCell>}
+                    {isAdmin && <TableCell>
                       <Box>
                         <Chip
                           label={record.coordinatorApproval.status}
@@ -250,7 +254,8 @@ const LeaveRecords: React.FC = () => {
                           </Typography>
                         )}
                       </Box>
-                    </TableCell>
+                    </TableCell>}
+
                     <TableCell>
                       {new Date(record.createdAt).toLocaleDateString()}
                     </TableCell>
