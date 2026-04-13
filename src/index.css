@@ -70,11 +70,9 @@
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Ensure body can scroll */
-    overflow-y: auto;
-    overflow-x: hidden;
-    /* Use min-height instead of height for flexibility */
-    min-height: 100vh;
+    /* Prevent full page scroll - only main content scrolls */
+    height: 100vh;
+    overflow: hidden;
     width: 100%;
   }
 
@@ -100,6 +98,7 @@
   }
 }
 
+
 .recharts-wrapper {
-  position: absolute !important;
+  position: relative;
 }
