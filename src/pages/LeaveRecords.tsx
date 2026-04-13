@@ -19,8 +19,15 @@ import {
   Button,
   CircularProgress,
   Alert,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
 } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { Search, Clear } from '@mui/icons-material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -63,21 +70,50 @@ const LeaveRecords: React.FC = () => {
   const [academicYear, setAcademicYear] = useState(new Date().getFullYear().toString());
   const [searchEmployee, setSearchEmployee] = useState('');
   const [filteredRecords, setFilteredRecords] = useState<LeaveRecord[]>([]);
+  const [monthFilter, setMonthFilter] = useState<string>('all');
+  const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
+  const [dateTo, setDateTo] = useState<Dayjs | null>(null);
+  const [dateError, setDateError] = useState<string>('');
+  const [filterMode, setFilterMode] = useState<'month' | 'range'>('month');
   const { user } = useAuth();
 
   useEffect(() => {
     fetchLeaveRecords();
-  }, [academicYear]);
+  }, [academicYear, filterMode]);
 
+  // Reset fields when filter mode changes
   useEffect(() => {
-    filterRecords();
-  }, [records, searchEmployee]);
+    if (filterMode === 'month') {
+      setDateFrom(null);
+      setDateTo(null);
+      setDateError('');
+    } else {
+      setMonthFilter('all');
+    }
+  }, [filterMode]);
 
   const fetchLeaveRecords = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/leave/records/${academicYear}`);
+      const params = new URLSearchParams();
+      params.append('filterMode', filterMode);
+
+      if (filterMode === 'month') {
+        params.append('academicYear', academicYear);
+        if (monthFilter && monthFilter !== 'all') params.append('month', monthFilter);
+      } else {
+        // Range mode doesn't use academicYear in query, but URL requires it
+        if (dateFrom) params.append('fromDate', dateFrom.toISOString());
+        if (dateTo) params.append('toDate', dateTo.toISOString());
+      }
+
+      if (searchEmployee) params.append('searchQuery', searchEmployee);
+
+      // academicYear is always required in the URL path
+      const url = `/api/leave/records/${academicYear}?${params.toString()}`;
+      const response = await axios.get(url);
       setRecords(response.data);
+      setFilteredRecords(response.data);
     } catch (error) {
       console.error('Error fetching leave records:', error);
     } finally {
@@ -85,7 +121,15 @@ const LeaveRecords: React.FC = () => {
     }
   };
 
-  const filterRecords = () => {
+  useEffect(() => {
+    if (dateFrom && dateTo && dateFrom.isAfter(dateTo)) {
+      setDateError('From date must be before To date');
+    } else {
+      setDateError('');
+    }
+  }, [dateFrom, dateTo]);
+
+  useEffect(() => {
     if (!searchEmployee) {
       setFilteredRecords(records);
       return;
@@ -96,7 +140,7 @@ const LeaveRecords: React.FC = () => {
       record.employee.employeeId.toLowerCase().includes(searchEmployee.toLowerCase())
     );
     setFilteredRecords(filtered);
-  };
+  }, [records, searchEmployee]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -137,8 +181,23 @@ const LeaveRecords: React.FC = () => {
         </Typography>
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+          {/* Filter Mode Toggle */}
+          <Box sx={{ flex: '1 1 100%', minWidth: '300px' }}>
+            <FormControl component="fieldset">
+              <Typography variant="subtitle2" gutterBottom>Filter By:</Typography>
+              <RadioGroup
+                row
+                value={filterMode}
+                onChange={(e) => setFilterMode(e.target.value as 'month' | 'range')}
+              >
+                <FormControlLabel value="month" control={<Radio />} label="Year + Month" />
+                <FormControlLabel value="range" control={<Radio />} label="Specific Date Range" />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+
           <Box sx={{ flex: '1 1 200px', minWidth: '200px' }}>
-            <FormControl fullWidth>
+            <FormControl fullWidth disabled={filterMode !== 'month'}>
               <InputLabel>Academic Year</InputLabel>
               <Select
                 value={academicYear}
@@ -148,10 +207,70 @@ const LeaveRecords: React.FC = () => {
                 <MenuItem value="2023">2023</MenuItem>
                 <MenuItem value="2024">2024</MenuItem>
                 <MenuItem value="2025">2025</MenuItem>
+                <MenuItem value="2026">2026</MenuItem>
               </Select>
             </FormControl>
           </Box>
-          
+
+          <Box sx={{ flex: '1 1 180px', minWidth: '180px' }}>
+            <FormControl fullWidth disabled={filterMode !== 'month'}>
+              <InputLabel>Month</InputLabel>
+              <Select
+                value={monthFilter}
+                onChange={(e) => setMonthFilter(e.target.value)}
+                label="Month"
+              >
+                <MenuItem value="all">All Months</MenuItem>
+                <MenuItem value="1">January</MenuItem>
+                <MenuItem value="2">February</MenuItem>
+                <MenuItem value="3">March</MenuItem>
+                <MenuItem value="4">April</MenuItem>
+                <MenuItem value="5">May</MenuItem>
+                <MenuItem value="6">June</MenuItem>
+                <MenuItem value="7">July</MenuItem>
+                <MenuItem value="8">August</MenuItem>
+                <MenuItem value="9">September</MenuItem>
+                <MenuItem value="10">October</MenuItem>
+                <MenuItem value="11">November</MenuItem>
+                <MenuItem value="12">December</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Box sx={{ flex: '1 1 180px', minWidth: '180px' }}>
+              <DatePicker
+                label="From Date"
+                value={dateFrom}
+                onChange={(value) => setDateFrom(value)}
+                disabled={filterMode !== 'range'}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!dateError,
+                    helperText: filterMode === 'range' ? dateError : ' '
+                  }
+                }}
+              />
+            </Box>
+
+            <Box sx={{ flex: '1 1 180px', minWidth: '180px' }}>
+              <DatePicker
+                label="To Date"
+                value={dateTo}
+                onChange={(value) => setDateTo(value)}
+                disabled={filterMode !== 'range'}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!dateError,
+                    helperText: filterMode === 'range' ? (dateError || ' ') : ' '
+                  }
+                }}
+              />
+            </Box>
+          </LocalizationProvider>
+
           <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
             <TextField
               fullWidth
@@ -164,13 +283,31 @@ const LeaveRecords: React.FC = () => {
             />
           </Box>
 
-          <Box sx={{ flex: '0 0 auto' }}>
+          <Box sx={{ flex: '0 0 auto', display: 'flex', gap: 1 }}>
             <Button
-              variant="outlined"
+              variant="contained"
               onClick={fetchLeaveRecords}
               sx={{ height: '56px' }}
+              disabled={!!dateError}
             >
-              Refresh
+              Apply Filters
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setFilterMode('month');
+                setMonthFilter('all');
+                setDateFrom(null);
+                setDateTo(null);
+                setSearchEmployee('');
+                setDateError('');
+                setAcademicYear(new Date().getFullYear().toString());
+                fetchLeaveRecords();
+              }}
+              sx={{ height: '56px' }}
+              startIcon={<Clear />}
+            >
+              Clear
             </Button>
           </Box>
         </Box>
