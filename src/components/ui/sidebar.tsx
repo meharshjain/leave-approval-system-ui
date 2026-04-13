@@ -116,8 +116,12 @@ export const DesktopSidebar = ({
     isHoveringRef.current = false;
     
     // Check if mouse is moving to a child element
-    const relatedTarget = e.relatedTarget as HTMLElement | null;
-    if (relatedTarget && sidebarRef.current && sidebarRef.current?.contains(relatedTarget)) {
+    const relatedTarget = e.relatedTarget;
+    if (
+      relatedTarget instanceof Node &&
+      sidebarRef.current &&
+      sidebarRef.current.contains(relatedTarget)
+    ) {
       return;
     }
 
@@ -165,11 +169,11 @@ export const DesktopSidebar = ({
     <motion.div
       ref={sidebarRef}
       className={cn(
-        "px-4 py-4 hidden md:flex md:flex-col bg-neutral-800 flex-shrink-0 relative",
+        "px-4 py-4 hidden md:flex md:flex-col bg-neutral-800 h-screen fixed left-0 top-0 z-40",
         className
       )}
       animate={{
-        width: isExpanded ? "300px" : "60px",
+        width: isExpanded ? "240px" : "60px",
       }}
       transition={{
         duration: 0.2,

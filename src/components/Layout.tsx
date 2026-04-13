@@ -123,9 +123,10 @@ const Layout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex h-screen w-full overflow-hidden">
+      {/* Fixed Sidebar - outside flex flow */}
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-        <SidebarBody className="flex flex-col min-h-screen">
+        <SidebarBody className="flex flex-col h-full">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden min-h-0">
             <SidebarLink
               link={{
@@ -182,7 +183,8 @@ const Layout: React.FC = () => {
           </div>
         </SidebarBody>
       </Sidebar>
-      <div className="flex flex-col flex-1 min-w-0">
+      {/* Scrollable Main Content - accounts for fixed sidebar width */}
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden ml-0 md:ml-16">
         {/* Header */}
         <header className="h-16 bg-neutral-900 border-b border-neutral-700 flex items-center px-4 md:px-6 flex-shrink-0">
           <Menu

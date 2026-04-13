@@ -19,8 +19,9 @@ import {
   TextField,
   CircularProgress,
   Alert,
+  Link,
 } from '@mui/material';
-import { CheckCircle, Cancel } from '@mui/icons-material';
+import { CheckCircle, Cancel, Attachment } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -38,6 +39,11 @@ interface LeaveRequest {
   totalDays: number;
   reason: string;
   status: string;
+  attachments: Array<{
+    filename: string;
+    originalName: string;
+    path: string;
+  }>;
   managerApproval: {
     status: string;
     comments?: string;
@@ -235,7 +241,26 @@ const LeaveApproval: React.FC = () => {
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Reason: {selectedRequest.reason}
                 </Typography>
-                
+                {selectedRequest.attachments && selectedRequest.attachments.length > 0 && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      Attachments:
+                    </Typography>
+                    {selectedRequest.attachments.map((att, index) => (
+                      <Link
+                        key={index}
+                        href={`/uploads/leave-attachments/${att.filename}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}
+                      >
+                        <Attachment fontSize="small" />
+                        {att.originalName}
+                      </Link>
+                    ))}
+                  </Box>
+                )}
+
                 <TextField
                   fullWidth
                   multiline

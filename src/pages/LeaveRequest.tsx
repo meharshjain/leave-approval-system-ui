@@ -13,12 +13,14 @@ import {
   MenuItem,
   Alert,
   CircularProgress,
+  Link,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import axios from 'axios';
+import { Upload, InsertDriveFile, Close } from '@mui/icons-material';
 
 interface LeaveRequestForm {
   leaveType: string;
@@ -27,21 +29,29 @@ interface LeaveRequestForm {
   reason: string;
 }
 
+interface FileData {
+  file: File | null;
+  name: string;
+  error: string;
+}
+
 
 const leaveTypes = [
-  { value: 'sick', label: 'Sick Leave' },
-  { value: 'vacation', label: 'Vacation' },
-  { value: 'personal', label: 'Personal' },
-  { value: 'emergency', label: 'Emergency' },
-  { value: 'maternity', label: 'Maternity' },
-  { value: 'paternity', label: 'Paternity' },
-  { value: 'other', label: 'Other' },
+  { value: 'casual', label: 'Casual Leave' },
+  { value: 'paid', label: 'Paid Leave' },
+  { value: 'earned', label: 'Earned Leave' },
+  { value: 'annual', label: 'Annual Leave' },
+  { value: 'restricted', label: 'Restricted Holiday' },
 ];
 
 const LeaveRequest: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [attachment, setAttachment] = useState<FileData>({ file: null, name: '', error: '' });
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
+  const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.pdf'];
 
   const {
     control,
@@ -60,6 +70,28 @@ const LeaveRequest: React.FC = () => {
 
   const startDate = watch('startDate');
   const endDate = watch('endDate');
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+    if (!file) return;
+
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      setAttachment({ file: null, name: '', error: 'Only JPEG, PNG, and PDF files are allowed' });
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      setAttachment({ file: null, name: '', error: 'File size must be less than 5MB' });
+      return;
+    }
+
+    setAttachment({ file, name: file.name, error: '' });
+  };
+
+  const removeAttachment = () => {
+    setAttachment({ file: null, name: '', error: '' });
+  };
 
   // Calculate total days when dates change
   useEffect(() => {
@@ -81,21 +113,28 @@ const LeaveRequest: React.FC = () => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/leave/request', {
-        leaveType: data.leaveType,
-        startDate: data.startDate.toISOString(),
-        endDate: data.endDate.toISOString(),
-        reason: data.reason,
-        academicYear: new Date().getFullYear().toString(),
+      const formData = new FormData();
+      formData.append('leaveType', data.leaveType);
+      formData.append('startDate', data.startDate.toISOString());
+      formData.append('endDate', data.endDate.toISOString());
+      formData.append('reason', data.reason);
+      formData.append('academicYear', new Date().getFullYear().toString());
+      if (attachment.file) {
+        formData.append('attachment', attachment.file);
+      }
+
+      const response = await axios.post('/api/leave/request', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       setMessage('Leave request submitted successfully!');
-      
+
       // Reset form
       setValue('leaveType', '');
       setValue('startDate', null);
       setValue('endDate', null);
       setValue('reason', '');
+      removeAttachment();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to submit leave request');
     } finally {
@@ -226,6 +265,49 @@ const LeaveRequest: React.FC = () => {
                   />
                 )}
               />
+            </Box>
+
+            {/* Attach Document */}
+            <Box>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Attach Document (Optional)
+              </Typography>
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+                id="attachment-input"
+              />
+              <label htmlFor="attachment-input">
+                <Button
+                  component="span"
+                  variant="outlined"
+                  startIcon={<Upload />}
+                  sx={{ mb: 1 }}
+                >
+                  Choose File
+                </Button>
+              </label>
+              {attachment.error && (
+                <Typography variant="caption" color="error" sx={{ display: 'block', ml: 1 }}>
+                  {attachment.error}
+                </Typography>
+              )}
+              {attachment.name && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                  <InsertDriveFile fontSize="small" />
+                  <Typography variant="body2">{attachment.name}</Typography>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={removeAttachment}
+                    sx={{ minWidth: 'auto', p: 0.5 }}
+                  >
+                    <Close fontSize="small" />
+                  </Button>
+                </Box>
+              )}
             </Box>
 
             <Box>
